@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#102f25"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cameron's Poker">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>Cameron's Poker</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1713;--panel:#14251e;--panel2:#1b3027;--gold:#e6b85c;--muted:#a9b9af;--line:#30483b}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#0d2119,#08110e 70%);color:#f6f5ed;font:16px system-ui,-apple-system,Segoe UI,sans-serif;padding:env(safe-area-inset-top) 14px env(safe-area-inset-bottom)}
+main{max-width:650px;margin:auto;padding:18px 0 32px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.brand{font-weight:950;font-size:clamp(22px,6vw,31px);letter-spacing:.3px}.sub{color:var(--muted);font-size:12px}.bank{background:var(--panel);padding:9px 13px;border-radius:13px;text-align:right;border:1px solid var(--line)}.bank strong{display:block;color:var(--gold);font-size:21px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.stat,.panel{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:12px}.stat{text-align:center}.stat small{display:block;color:var(--muted);font-size:11px}.stat b{font-size:19px}
+.table{border:7px solid #654323;border-radius:32px;background:radial-gradient(ellipse at center,#28774e,#0d3b2b 75%);padding:14px 9px;box-shadow:inset 0 0 0 2px #b18a52;min-height:260px;display:flex;flex-direction:column;justify-content:space-between;gap:14px}
+.seat{text-align:center}.seatlabel{font-size:11px;font-weight:800;letter-spacing:1px;color:#e6eadf}.seatname{font-size:12px;color:#d4e2d8;margin:2px 0 6px}.cards{display:flex;justify-content:center;gap:5px;min-height:67px;align-items:center}.card{width:46px;height:65px;background:#fffdf7;color:#171717;border-radius:7px;box-shadow:0 2px 5px #0008;display:flex;flex-direction:column;justify-content:space-between;padding:4px 5px;font-weight:900;flex-shrink:0}.card .rank{font-size:17px;line-height:17px}.card .suit{font-size:20px;align-self:flex-end;line-height:19px}.card.red{color:#d6273e}.card.back{background:repeating-linear-gradient(45deg,#183b77,#183b77 5px,#f6f2e8 5px,#f6f2e8 7px);border:3px solid white}
+.boardlabel{font-size:11px;color:#dce9df}.stage{font-size:11px;font-weight:800;color:#f8d98d;margin-top:5px;min-height:14px}
+.info{margin-top:12px}.message{font-weight:700;min-height:25px}.hint{font-size:13px;color:var(--muted);margin-top:5px;line-height:1.45}
+.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}.btn{border:0;border-radius:12px;padding:14px 10px;font-size:15px;font-weight:850;background:#e5b656;color:#211909;min-height:48px}.btn.secondary{background:#28493a;color:#fff}.btn.danger{background:#71353a;color:#fff}.btn:disabled{opacity:.4}
+.raisebox{display:flex;align-items:center;gap:10px;margin-top:10px;color:var(--muted);font-size:13px}.raisebox input{width:100%;accent-color:var(--gold)}
+.tabs{display:flex;gap:7px;margin:16px 0 10px}.tab{flex:1;border:1px solid var(--line);border-radius:10px;padding:10px 6px;background:var(--panel);color:#e8eee9;font-weight:800}.tab.active{background:var(--gold);color:#201808;border-color:var(--gold)}
+.section{display:none}.section.active{display:block}.rank{border:1px solid var(--line);border-radius:12px;margin:8px 0;overflow:hidden;background:var(--panel)}.rank button{width:100%;background:none;color:inherit;border:0;padding:12px;display:flex;align-items:center;gap:10px;text-align:left}.rankname{font-weight:850;flex:1}.rankdetail{display:none;padding:0 12px 13px;color:#d4e0d8;font-size:13px;line-height:1.5}.rank.open .rankdetail{display:block}.mini{display:flex;gap:3px}.mini .card{width:27px;height:39px;padding:3px;font-size:11px}.mini .rank{border:0}.mini .card .rank{font-size:12px;line-height:12px}.mini .card .suit{font-size:13px;line-height:13px}
+.note{color:var(--muted);font-size:12px;line-height:1.5}.footer{font-size:11px;color:#7f9286;text-align:center;margin-top:18px}
+@media(max-width:380px){.card{width:40px;height:59px}.cards{gap:4px}.table{padding:12px 5px}}
+</style>
+</head>
+<body><main>
+<header class="top"><div><div class="brand">♠ CAMERON'S POKER</div><div class="sub">Texas Hold'em · Learn while you play</div></div><div class="bank"><span class="sub">YOUR CHIPS</span><strong id="bank">1,000</strong></div></header>
+<div class="stats"><div class="stat"><small>WINS</small><b id="wins">0</b></div><div class="stat"><small>HANDS</small><b id="hands">0</b></div><div class="stat"><small>POT</small><b id="pot">0</b></div></div>
+<section class="table">
+ <div class="seat"><div class="seatlabel">COMPUTER</div><div class="seatname" id="oppname">Waiting for a hand</div><div class="cards" id="oppcards"></div></div>
+ <div class="seat"><div class="boardlabel">COMMUNITY CARDS</div><div class="cards" id="board"></div><div class="stage" id="stage">READY TO DEAL</div></div>
+ <div class="seat"><div class="seatlabel">YOU · CAMERON</div><div class="cards" id="yourcards"></div></div>
+</section>
+<section class="panel info"><div class="message" id="message">Welcome to Cameron's Poker. Deal a hand to start.</div><div class="hint" id="hint">You get two private cards and share five community cards with the computer. Make the best five-card hand.</div><div class="actions" id="actions"><button class="btn" id="deal">♠ Deal New Hand</button></div><div class="raisebox" id="raisebox" hidden><label for="raise">Raise amount</label><input id="raise" type="range" min="20" max="200" step="10" value="50"><b id="raiseval">50</b></div></section>
+<nav class="tabs"><button class="tab active" data-tab="game">Play</button><button class="tab" data-tab="rankings">Hand Rankings</button><button class="tab" data-tab="howto">How to Play</button></nav>
+<section id="game" class="section active"><div class="panel"><b>Quick tip</b><p class="note">A pair is two cards of the same rank. A flush is five cards of the same suit. A straight is five consecutive ranks. Your best hand uses any combination of your two cards and the five community cards.</p></div></section>
+<section id="rankings" class="section"><b>Hand Rankings · strongest to weakest</b><p class="note">Tap a hand to expand its explanation and example. These are the standard Texas Hold'em rankings.</p><div id="ranklist"></div></section>
+<section id="howto" class="section"><div class="panel"><h3>How Texas Hold'em works</h3><ol class="note"><li>Each player receives two private cards.</li><li>The flop reveals three shared community cards.</li><li>The turn reveals a fourth community card.</li><li>The river reveals the fifth community card.</li><li>If both players remain, the best five-card hand wins the pot.</li></ol><h3>Actions</h3><p class="note"><b>Check:</b> Pass without betting when no bet is owed.<br><b>Call:</b> Match the computer's current bet.<br><b>Raise:</b> Increase the bet to put more chips in the pot.<br><b>Fold:</b> Give up the hand and let the opponent take the pot.</p><p class="note">This is a practice game using virtual chips only. The computer opponent uses a simplified decision strategy.</p></div></section>
+<div class="actions"><button class="btn secondary" id="reset">Reset chips</button><button class="btn secondary" id="newgame">New session</button></div>
+<div class="footer">Practice chips only · No real money · Cameron's Poker</div>
+</main>
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+const suits=['♠','♥','♦','♣'], ranks=['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+const red=s=>s==='♥'||s==='♦';
+let deck=[],you=[],opp=[],board=[],bank=1000,oppBank=1000,pot=0,betYou=0,betOpp=0,street=0,active=false,done=true,wins=0,hands=0,raiseAmt=50,awaiting=false;
+const rankData=[
+['Royal Flush','The best possible hand in poker.','A♥ K♥ Q♥ J♥ 10♥','Five consecutive cards from 10 through Ace, all in the same suit. This is the highest possible straight flush.'],
+['Straight Flush','Five cards in a row, all the same suit.','9♠ 8♠ 7♠ 6♠ 5♠','Every card must be consecutive and share one suit. If two players have straight flushes, the one with the higher top card wins.'],
+['Four of a Kind','Four cards of the same rank.','K♠ K♥ K♦ K♣ 7♠','You have four matching cards, such as four Kings. The fifth card is called the kicker and breaks ties.'],
+['Full House','Three of a kind plus a pair.','Q♠ Q♥ Q♦ 8♣ 8♥','This hand combines a set of three matching cards with a separate pair. Higher three-of-a-kind wins if comparing full houses.'],
+['Flush','Any five cards of the same suit, not in sequence.','A♦ J♦ 8♦ 5♦ 2♦','All five cards share a suit. They do not need to be consecutive. Compare the highest card first to break ties.'],
+['Straight','Five consecutive ranks in any mix of suits.','9♠ 8♥ 7♦ 6♣ 5♠','The suits do not matter. An Ace can be high (10-J-Q-K-A) or low (A-2-3-4-5), but it cannot wrap around.'],
+['Three of a Kind','Three cards of the same rank.','7♠ 7♥ 7♦ K♣ 4♠','Three matching cards plus two unrelated cards. The highest three-of-a-kind wins; kickers break ties.'],
+['Two Pair','Two different pairs in the same hand.','J♠ J♥ 4♦ 4♣ A♠','You have two cards of one rank and two of another. Compare the higher pair, then the lower pair, then the kicker.'],
+['One Pair','Two cards of the same rank.','A♠ A♥ 10♦ 6♣ 3♠','Just one matching pair. If players both have a pair, the higher pair wins; remaining cards break ties.'],
+['High Card','No pair or other made hand.','A♠ J♥ 8♦ 5♣ 2♠','When you have none of the hands above, your highest card plays. If those tie, compare the next-highest cards.']
+];
+function parseExample(s){return s.split(' ').map(x=>({r:x.slice(0,-1),s:x.slice(-1)}))}
+function cardEl(c,hidden=false){let d=document.createElement('div');d.className='card'+(hidden?' back':red(c.s)?' red':'');if(!hidden)d.innerHTML='<span class="rank">'+c.r+'</span><span class="suit">'+c.s+'</span>';return d}
+function renderCards(id,cards,hide=false){let el=$(id);el.innerHTML='';cards.forEach(c=>el.append(cardEl(c,hide)))}
+function shuffle(){deck=[];for(let s of suits)for(let r of ranks)deck.push({r,s});for(let i=deck.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]]}}
+function val(r){return ranks.indexOf(r)+2}
+function combos(a,k){let out=[];function rec(st,x){if(x.length===k){out.push(x);return}for(let i=st;i<=a.length-(k-x.length);i++)rec(i+1,[...x,a[i]])}rec(0,[]);return out}
+function eval5(cs){
+ let vs=cs.map(c=>val(c.r)).sort((a,b)=>b-a), counts={};vs.forEach(v=>counts[v]=(counts[v]||0)+1);
+ let groups=Object.entries(counts).map(([v,n])=>[+v,n]).sort((a,b)=>b[1]-a[1]||b[0]-a[0]);
+ let flush=cs.every(c=>c.s===cs[0].s),uniq=[...new Set(vs)],straight=0;
+ if(uniq.length===5){if(uniq[0]-uniq[4]===4)straight=uniq[0];else if(uniq.join(',')==='14,5,4,3,2')straight=5}
+ if(flush&&straight===14)return [10,14];
+ if(flush&&straight)return [9,straight];
+ if(groups[0][1]===4)return [8,groups[0][0],groups[1][0]];
+ if(groups[0][1]===3&&groups[1][1]===2)return [7,groups[0][0],groups[1][0]];
+ if(flush)return [6,...vs];
+ if(straight)return [5,straight];
+ if(groups[0][1]===3)return [4,groups[0][0],...groups.slice(1).map(x=>x[0]).sort((a,b)=>b-a)];
+ if(groups[0][1]===2&&groups[1][1]===2)return [3,Math.max(groups[0][0],groups[1][0]),Math.min(groups[0][0],groups[1][0]),groups[2][0]];
+ if(groups[0][1]===2)return [2,groups[0][0],...groups.slice(1).map(x=>x[0]).sort((a,b)=>b-a)];
+ return [1,...vs]
+}
+function evaluate(cs){return combos(cs,5).map(eval5).sort((a,b)=>{for(let i=0;i<Math.max(a.length,b.length);i++){if((b[i]||0)!==(a[i]||0))return (b[i]||0)-(a[i]||0)}return 0})[0]}
+const names=['','High Card','One Pair','Two Pair','Three of a Kind','Straight','Flush','Full House','Four of a Kind','Straight Flush','Royal Flush'];
+function cmp(a,b){for(let i=0;i<Math.max(a.length,b.length);i++){if((a[i]||0)!==(b[i]||0))return (a[i]||0)>(b[i]||0)?1:-1}return 0}
+function fmt(n){return n.toLocaleString()}
+function refresh(){ $('bank').textContent=fmt(bank);$('wins').textContent=wins;$('hands').textContent=hands;$('pot').textContent=fmt(pot);renderCards('yourcards',you);renderCards('board',board);renderCards('oppcards',opp,active&&!done);$('oppname').textContent=active?'Computer · '+fmt(oppBank)+' chips':'Waiting for a hand';$('stage').textContent=['READY TO DEAL','PRE-FLOP','FLOP','TURN','RIVER','SHOWDOWN'][street]||'SHOWDOWN';}
+function actions(html){$('actions').innerHTML=html}
+function prompt(m,h){$('message').textContent=m;$('hint').textContent=h||''}
+function setActions(){let owed=Math.max(0,betOpp-betYou);$('raisebox').hidden=false;$('raise').max=Math.max(20,Math.min(200,bank));$('raise').value=Math.min(raiseAmt,+$('raise').max);$('raiseval').textContent=$('raise').value;actions(`<button class="btn secondary" id="checkcall">${owed?'Call '+fmt(owed):'Check'}</button><button class="btn" id="raisebtn">Raise</button><button class="btn danger" id="fold">Fold</button>`);$('checkcall').onclick=()=>playerAction('call');$('raisebtn').onclick=()=>playerAction('raise');$('fold').onclick=()=>playerAction('fold')}
+$('raise').oninput=e=>{$('raiseval').textContent=e.target.value};
+function put(who,amount){amount=Math.max(0,Math.min(amount,who==='you'?bank:oppBank));if(who==='you'){bank-=amount;betYou+=amount}else{oppBank-=amount;betOpp+=amount}pot+=amount}
+function deal(){if(bank<=0){prompt('You are out of chips.','Reset chips to play again.');return}shuffle();you=[deck.pop(),deck.pop()];opp=[deck.pop(),deck.pop()];board=[];pot=0;betYou=betOpp=0;street=1;active=true;done=false;awaiting=false;hands++;put('you',10);put('opp',20);refresh();prompt('Pre-flop: the computer has bet 20.','You have posted 10. Call 10 more, raise, or fold.');setActions()}
+function playerAction(action){if(done||awaiting)return;$('raisebox').hidden=true;if(action==='fold'){bank+=0;oppBank+=pot;pot=0;done=true;active=false;refresh();prompt('You folded. The computer wins the pot.','Deal another hand when you are ready.');actions('<button class="btn" id="deal2">♠ Deal New Hand</button>');$('deal2').onclick=deal;return}
+ if(action==='call'){let owed=Math.max(0,betOpp-betYou);put('you',owed);if(bank===0&&betYou<betOpp){oppBank+=pot;pot=0;done=true;active=false;refresh();prompt('You are all-in, but could not match the full bet.','This practice version settles the hand immediately.');actions('<button class="btn" id="deal2">Deal New Hand</button>');$('deal2').onclick=deal;return}}
+ if(action==='raise'){let amount=Number($('raise').value)||50;put('you',Math.max(0,betOpp-betYou)+amount);let call=Math.max(0,betYou-betOpp);put('opp',call);betOpp=betYou}
+ awaiting=true;refresh();setTimeout(computerRespond,450)}
+function computerRespond(){if(done)return;let strength=0;let cards=[...opp,...board];if(cards.length>=5)strength=evaluate(cards)[0];else {let a=val(opp[0].r),b=val(opp[1].r);strength=(a===b?4:0)+(opp[0].s===opp[1].s?1:0)+(Math.abs(a-b)<=2?1:0)+(Math.max(a,b)>=12?1:0)}
+ let owed=Math.max(0,betYou-betOpp),foldChance=owed>0&&strength<3&&Math.random()<.18;
+ if(foldChance){bank+=pot;pot=0;done=true;active=false;awaiting=false;refresh();prompt('The computer folds. You win the pot!','Nice hand. Deal again to keep playing.');wins++;actions('<button class="btn" id="deal2">♠ Deal New Hand</button>');$('deal2').onclick=deal;return}
+ if(owed)put('opp',owed);
+ betOpp=betYou;awaiting=false;refresh();
+ if(street===1){advance(3);return}
+ if(street===2){advance(1);return}
+ if(street===3){advance(1);return}
+ showdown()
+}
+function advance(n){board.push(...deck.splice(0,n));street++;betYou=betOpp=0;refresh();let label=street===2?'The flop is out.':street===3?'The turn is out.':'The river is out.';prompt(label+' Your action.','Check to let the computer respond, or raise to build the pot.');setActions();$('checkcall').textContent='Check';}
+function showdown(){street=5;done=true;active=false;let a=evaluate([...you,...board]),b=evaluate([...opp,...board]),c=cmp(a,b),result=c>0?'You win!':c<0?'Computer wins.':'It is a tie!';if(c>0){bank+=pot;wins++}else if(c<0)oppBank+=pot;else{bank+=Math.floor(pot/2);oppBank+=Math.ceil(pot/2)}let yours=names[a[0]],theirs=names[b[0]];pot=0;refresh();renderCards('oppcards',opp,false);prompt(result,`Your hand: ${yours}. Computer's hand: ${theirs}. The best five-card hand wins.`);actions('<button class="btn" id="deal2">♠ Deal New Hand</button>');$('deal2').onclick=deal}
+$('deal').onclick=deal;
+$('reset').onclick=()=>{bank=oppBank=1000;wins=hands=0;pot=0;done=true;active=false;you=[];opp=[];board=[];street=0;refresh();prompt('Chips reset.','Deal a new hand to play.');actions('<button class="btn" id="deal3">♠ Deal New Hand</button>');$('deal3').onclick=deal};
+$('newgame').onclick=()=>{$('reset').click();window.scrollTo({top:0,behavior:'smooth'})};
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===t));document.querySelectorAll('.section').forEach(x=>x.classList.toggle('active',x.id===t.dataset.tab))});
+$('ranklist').innerHTML=rankData.map((r,i)=>`<div class="rank"><button aria-expanded="false"><span class="rankname">${10-i}. ${r[0]}</span><span>＋</span></button><div class="rankdetail"><b>${r[1]}</b><div class="mini" style="margin:9px 0">${parseExample(r[2]).map(c=>`<div class="card ${red(c.s)?'red':''}"><span class="rank">${c.r}</span><span class="suit">${c.s}</span></div>`).join('')}</div>${r[3]}</div></div>`).join('');
+$('ranklist').querySelectorAll('.rank button').forEach(b=>b.onclick=()=>{let p=b.parentElement;p.classList.toggle('open');b.setAttribute('aria-expanded',p.classList.contains('open'));b.lastElementChild.textContent=p.classList.contains('open')?'−':'＋'});
+refresh();
+})();
+</script>
+<script>if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});</script>
+</body></html>

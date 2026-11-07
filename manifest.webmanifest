@@ -1,0 +1,17 @@
+{
+  "name": "Cameron's Poker",
+  "short_name": "Cameron's Poker",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b1713",
+  "theme_color": "#102f25",
+  "description": "A mobile Texas Hold'em poker training game.",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
